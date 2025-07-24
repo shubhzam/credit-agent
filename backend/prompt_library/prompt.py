@@ -28,7 +28,7 @@ def execute_sql_query(query: str) -> list:
     conn_str = (
         "DRIVER={ODBC Driver 17 for SQL Server};"
         "SERVER=216.48.191.98;"
-        "DATABASE=Credit_OPS_Main;"  # or Kredit_Bee_FC based on query
+        "DATABASE=Credit_GPT;"
         "UID=ibsadmin;"
         "PWD=Viking@@ibs2023;"
     )
@@ -44,6 +44,7 @@ def execute_sql_query(query: str) -> list:
             columns = [column[0] for column in cursor.description]
             rows = cursor.fetchall()
             results = [dict(zip(columns, row)) for row in rows]
+            print(results)
             print(f"✅ Query executed successfully. Rows fetched: {len(results)}")
             return results
     except Exception as e:
@@ -92,8 +93,8 @@ def llm_router(lastmessage) -> json:
 
         Respond with a JSON object like this for credit underwriting requests:
         {                           
-            "intent": "credit_underwriting",
-            "webtop_id": ["ABC123"],
+            "intent": "run_credit_underwriting_bot",
+            "webtop_ids": ["ABC123"],
             "stages": ["document_download", "data_extraction", "crm_scraping","offer_check", "external_checks", "internal_checks", "data_validation", "cas_preparation"]
             "message": "Credit underwriting request received for webtop id ABC123. Please wait while I process the request."
         }
@@ -101,7 +102,7 @@ def llm_router(lastmessage) -> json:
         The user's intent can be complete credit underwriting process or any of the stages mentioned independently, and you will route the request accordingly. Suppose the user wants to prepare CAS for webtop id ABC123 and 8043g803jg20, then the response should be like this:
                                    
         {
-            "intent": "credit_underwriting",
+            "intent": "run_credit_underwriting_bot",
             "webtop_ids": ["ABC123", "8043g803jg20"],
             "stages": ["cas_preparation"],
             "message": "CAS preparation request received for webtop ids ABC123 and 8043g803jg20. Please wait while I prepare the Credit Assessment Summary."
@@ -112,22 +113,22 @@ def llm_router(lastmessage) -> json:
         BUREAU ANALYSIS STAGES:                               
         - document_download: Downloads the bureau report.
         - data_extraction: Extract data from documents.
-        - report_generation: Generate analysed bureau report.
+        - report_creation: Generate analysed bureau report.
                                    
         Respond with a JSON object like this for bureau analysis requests:
         {                           
-            "intent": "bureau_analysis",
-            "webtop_id": ["ABC123"],
-            "stages": ["document_download", "data_extraction", "data_validation", "report_generation"],
+            "intent": "run_bureau_analysis_bot",
+            "webtop_ids": ["ABC123"],
+            "stages": ["document_download", "data_extraction", "data_validation", "report_creation"],
             "message": "Bureau Analysis request received for webtop id ABC123. Please wait while I process the request."
         }
                                    
         The user's intent can be complete Bureau Analysis process or any of the stages mentioned independently, and you will route the request accordingly. Suppose the user wants to prepare report for bureau analysis AS for webtop id ABC123 and 8043g803jg20, then the response should be like this:
                                    
         {
-            "intent": "bureau_analysis",
+            "intent": "run_bureau_analysis_bot",
             "webtop_ids": ["ABC123", "8043g803jg20"],
-            "stages": ["report_generation"],
+            "stages": ["report_creation"],
             "message": "Report generation request received for webtop ids ABC123 and 8043g803jg20. Please wait while I prepare the Credit Assessment Summary."
         }
 
@@ -135,20 +136,20 @@ def llm_router(lastmessage) -> json:
         - document_download: Downloads old and new bureau for comparison.
         - data_extraction: Extract data from documents.
         - data_validation: Validate extracted data.
-        - report_generation: Generate comparison report.
+        - report_creation: Generate comparison report.
                                    
         Respond with a JSON object like this for bureau comparison requests:                                                      
         {                           
-            "intent": "bureau_comparison",
-            "webtop_id": ["ABC123"],
-            "stages": ["document_download", "data_extraction", "data_validation", "report_generation"],
+            "intent": "run_bureau_comparison_bot",
+            "webtop_ids": ["ABC123"],
+            "stages": ["document_download", "data_extraction", "data_validation", "report_creation"],
             "message": "Bureau Comparison request received for webtop id ABC123. Please wait while I process the request."
         }
                                    
         The user's intent can be complete Bureau Comparison process or any of the stages mentioned independently, and you will route the request accordingly. Suppose the user wants to download documents for bureau comparison AS for webtop id ABC123 and 8043g803jg20, then the response should be like this:
                                                               
         {
-            "intent": "bureau_comparison",
+            "intent": "run_bureau_comparison_bot",
             "webtop_ids": ["ABC123", "8043g803jg20"],
             "stages": ["document_download"],
             "message": "Documents download request has been received for webtop ids ABC123 and 8043g803jg20. Please wait while I prepare the comparison report."
@@ -158,20 +159,20 @@ def llm_router(lastmessage) -> json:
         - document_download: Downloads the bureau report.
         - data_extraction: Extract data from documents.
         - data_validation: Validate extracted data.
-        - report_generation: Generate demog report.   
+        - report_creation: Generate demog report.   
                                    
          Respond with a JSON object like this for bureau comparison requests:                                                      
         {                           
-            "intent": "bureau_demog"
-            "webtop_id": ["ABC123"],
-            "stages": ["document_download", "data_extraction", "data_validation", "report_generation"],
+            "intent": "run_bureau_demog_bot"
+            "webtop_ids": ["ABC123"],
+            "stages": ["document_download", "data_extraction", "data_validation", "report_creation"],
             "message": "Bureau Demograpy report for webtop id ABC123 has been recieved. Please wait while I process the request."
         }
                                    
         The user's intent can be complete Bureau Demog process or any of the stages mentioned independently, and you will route the request accordingly. Suppose the user wants to download documents for bureau demography AS for webtop id ABC123 and 8043g803jg20, then the response should be like this:
                                                               
         {
-            "intent": "bureau_demog",
+            "intent": "run_bureau_demog_bot",
             "webtop_ids": ["ABC123", "8043g803jg20"],
             "stages": ["document_download"],
             "message": "Documents download request has been received for webtop ids ABC123 and 8043g803jg20. Please wait while I prepare the ."
@@ -181,20 +182,20 @@ def llm_router(lastmessage) -> json:
         - document_download: Downloads the bureau report.
         - data_extraction: Extract data from documents.
         - data_validation: Validate extracted data.
-        - report_generation: Generate deviation report.   
+        - report_creation: Generate deviation report.   
                                    
         Respond with a JSON object like this for bureau comparison requests:                                                      
         {                           
-            "intent": "bureau_deviation"
-            "webtop_id": ["ABC123"],
-            "stages": ["document_download", "data_extraction", "data_validation", "report_generation"],
+            "intent": "run_bureau_deviation_bot"
+            "webtop_ids": ["ABC123"],
+            "stages": ["document_download", "data_extraction", "data_validation", "report_creation"],
             "message": "Bureau Deviation request for webtop id ABC123 has been recieved. Please wait while I process the request."
         }
                                    
         The user's intent can be complete Bureau Deviation process or any of the stages mentioned independently, and you will route the request accordingly. Suppose the user wants to download documents for bureau deviation AS for webtop id ABC123 and 8043g803jg20, then the response should be like this:
                                                               
         {
-            "intent": "bureau_deviation",
+            "intent": "run_bureau_deviation_bot",
             "webtop_ids": ["ABC123", "8043g803jg20"],
             "stages": ["document_download"],
             "message": "Documents download request has been received for webtop ids ABC123 and 8043g803jg20. Please wait while I prepare the report."
@@ -247,7 +248,7 @@ def llm_router(lastmessage) -> json:
 def knowledge_base(userinput) -> str:
     system_msg = SystemMessage(content="""
     You are an AI that only returns SQL SELECT queries based on user requests.
- 
+    You must only follow the provided schema and instructions.
     Return the result as a JSON object with a single key `query`, where the value is a valid SQL SELECT statement
     as a single-line string, without newlines or formatting.
     Only return the query in the following JSON format:
@@ -265,10 +266,13 @@ def knowledge_base(userinput) -> str:
  
     You have access to the following database schemas:
     Here are the tables and their purposes:
-    - Credit_Headers: Summary of bureau data
-    - Credit_Details: Account-level credit information
-    - Credit_DPD: Days past due for individual accounts
-    - Credit_Enquiries: Credit inquiries made by lenders
+    - Credit_Headers: This table includes the details of the customer, like customer name, PAN number, DOB, email ID, address, phone number, and the overall account details like total number of accounts, total live accounts, etc.
+                               
+    - Credit_Details: This table includes the history of customer loans like the opened date, loan amount, EMI amount, tenure, interest, account type, account status, derog status, loan type, etc.
+                               
+    - Credit_DPD: This table includes the DPD of the customer for each month. If the payment history starts from 20-02-2023 and ends on 07-09-2024, it will have the DPD for each month to check whether the customer has defaults in DPD, like not paying EMIs on time or having SUB/DBT/LSS in the DPD history.
+                               
+    - Credit_Enquries: This table includes the history of the customer's enquiries for loans, with enquiry date, enquiry amount, enquiry loan type, etc.
                                
     - Customer_Demog_Detail: This table is used to store customer demographic details such as Name, Date of Birth, PAN Number, Address, Email, and Mobile Number, which are extracted from various sources like the Application Form, KYC documents (CKYC, OKYC, VKYC), and scraped details from Salesforce (SFDC).
                                
@@ -430,7 +434,7 @@ def knowledge_base(userinput) -> str:
     - Control_Number (nvarchar): Control Number  
     - Document_Type (nvarchar): Document Type (e.g., "Old" or "New")  
 
-4.Table: Credit_GPT.dbo.Credit_Enquiries  
+4.Table: Credit_GPT.dbo.Credit_Enquries  
     - Webtop_ID (nvarchar): Webtop ID  
     - Document_Type (nvarchar): Document Type (can be "Old_CIBIL_Report" or "New_CIBIL_Report" — in some cases, both exist for one Webtop ID)  
     - Member (nvarchar): Member Type  
@@ -579,7 +583,9 @@ def knowledge_base(userinput) -> str:
     - Offer_Min_Tenure: Minimum tenure the customer can choose for the loan offer.
     - Offer_Max_Tenure: Maximum allowed tenure for the loan offer.
     - Offer_Expiry_Date: Date when the offer will expire or become invalid.
-    - Offer_Campaign_Name: Marketing or promotional campaign name tied to the offer. 
+    - Offer_Campaign_Name: Marketing or promotional campaign name tied to the offer.
+                               
+      
     """)
  
     human_msg = HumanMessage(content=userinput)
@@ -591,11 +597,11 @@ def knowledge_base(userinput) -> str:
     print(query)
     data = execute_sql_query(query)
     prompt_text = (
-                "As per user input database was queried and these rows were fetched:\n"
-                f"{data}\n\n"
-                "If the amount if data is very less, return it in a simple english sentence. "
-                "otherwise convert the following key-value data into a table and return the result in **Markdown format**"
-                "Just prove the markdown format, dont reply antything else."
+    "As per the user input, the database was queried and the following rows were fetched:\n"
+    f"{data}\n\n"
+   "Convert the following JSON-like Python data into a Markdown table."
+    "Use human-readable headers (e.g. account_no → Account Number)."
+    "Only output the table; no extra text."
             )
     
     llm_response = llm.invoke(
@@ -608,14 +614,22 @@ def knowledge_base(userinput) -> str:
 
 
 def general_response(userinput) -> str:
-    system_msg = SystemMessage(content="""
-You are CreditUnderwritingAssistant, an expert on credit underwriting processes, Bureau and FAQs. Always determine whether the user’s question is about credit underwriting:
+    system_msg = system_msg = SystemMessage(content="""
+You are CreditKnowledgeAssistant, an expert in credit underwriting, NBFC operations, banking regulations, and credit-related terminology. Your job is to clearly and accurately explain any term, process, or FAQ related to these domains.
 
-• If the question concerns any aspect of the credit underwriting process or common underwriting FAQs (e.g. what is credit underwriting, required documents, steps, definitions of terms), answer concisely and accurately using only your internal credit-underwriting knowledge.
+• If the user’s query involves any of the following:
+    – Credit underwriting processes or steps
+    – Terms related to NBFCs (Non-Banking Financial Companies)
+    – Banking industry terms (e.g. loan types, account classifications, compliance)
+    – Credit scores, bureau reports, CIBIL, Experian, Equifax, etc.
+    – Loan eligibility, interest rates, repayment structures
+    – Risk assessment, KYC, AML, and regulatory checks
 
-• If the question is not related to credit underwriting, respond with exactly:
-  “Currently we only provide services related to Credit Underwriting. Please provide actions related to Underwriting related Task.”
-    """)
+   → Answer in a simple, accurate, and concise manner using your internal knowledge.
+
+• If the question is **not** related to any of the above domains, respond with:
+   “Currently we only provide services related to Credit, Banking, and NBFC-related tasks. Please provide a relevant query.”
+""")
  
     human_msg = HumanMessage(content=userinput)
  

@@ -80,13 +80,13 @@ def task_insertion(work_id,webtop_id,process_name,task_name):
     sTask_number_list="'"+"','".join(task_number_list)+"'"
  
     Already_present_records=pd.read_sql(f'''select Task_Number from Credit_GPT.dbo.Task_Processing where Webtop_ID='{webtop_id}' and
- 
+    process_name='{process_name}' and
                                         Task_Number in ({sTask_number_list})''',conn)
  
     set_Already_present_records=set(Already_present_records['Task_Number'])
- 
+    
     set_task_number_list=set(task_number_list)
- 
+    print(sTask_number_list)
     set_new_tasks_to_insert=set_task_number_list-set_Already_present_records
  
     sNew_tasks_to_insert="'"+"','".join(set_new_tasks_to_insert)+"'"
